@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REPUBLIC · us.ci — 数字主权共和国</title>
+<meta name="description" content="REPUBLIC.us.ci — 一个由代码、共识与个体主权构成的数字共和国。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Reset & Tokens ============ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05060a;
+  --cyan:#22e1ff;
+  --violet:#8b5cf6;
+  --pink:#ff2fb9;
+  --ink:#e8ecf5;
+  --muted:#7c869b;
+  --line:rgba(255,255,255,.08);
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  overflow-x:hidden;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(139,92,246,.45);color:#fff}
+
+/* ============ 背景层 ============ */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.vignette{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(139,92,246,.16), transparent 55%),
+    radial-gradient(90% 70% at 80% 100%, rgba(34,225,255,.10), transparent 60%),
+    radial-gradient(70% 60% at 10% 90%, rgba(255,47,185,.08), transparent 60%);
+}
+.glow-cursor{
+  position:fixed;left:0;top:0;width:440px;height:440px;border-radius:50%;
+  background:radial-gradient(circle, rgba(139,92,246,.20), rgba(34,225,255,.07) 45%, transparent 68%);
+  pointer-events:none;z-index:1;will-change:transform;
+}
+@media (pointer:coarse){.glow-cursor{display:none}}
+
+/* ============ 顶部滚动进度 ============ */
+.progress{
+  position:fixed;top:0;left:0;width:100%;height:2px;z-index:60;
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink));
+  transform:scaleX(0);transform-origin:0 50%;
+  box-shadow:0 0 12px rgba(139,92,246,.9);
+}
+
+/* ============ 导航 ============ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px clamp(18px,5vw,64px);
+  transition:padding .45s cubic-bezier(.2,.8,.2,1), background .45s, border-color .45s, backdrop-filter .45s;
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled{
+  padding-top:13px;padding-bottom:13px;
+  background:rgba(5,6,10,.62);
+  -webkit-backdrop-filter:blur(18px) saturate(170%);
+  backdrop-filter:blur(18px) saturate(170%);
+  border-bottom-color:var(--line);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-weight:700;font-size:.82rem;letter-spacing:.22em;
+}
+.brand-mark{
+  width:11px;height:11px;border-radius:3px;
+  background:linear-gradient(135deg,var(--cyan),var(--violet),var(--pink));
+  box-shadow:0 0 16px rgba(139,92,246,.9);
+  animation:pulseMark 2.6s ease-in-out infinite;
+}
+@keyframes pulseMark{
+  0%,100%{box-shadow:0 0 10px rgba(139,92,246,.7);transform:rotate(0)}
+  50%{box-shadow:0 0 26px rgba(34,225,255,.95);transform:rotate(90deg)}
+}
+.brand .dim{color:var(--muted);font-weight:500}
+.nav-links{display:flex;gap:34px;font-size:.78rem;letter-spacing:.14em;color:var(--muted)}
+.nav-links a{position:relative;transition:color .3s}
+.nav-links a::after{
+  content:"";position:absolute;left:0;bottom:-6px;width:100%;height:1px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+  transform:scaleX(0);transform-origin:0 50%;transition:transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-cta{
+  font-size:.72rem;letter-spacing:.18em;font-weight:600;
+  padding:10px 20px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  transition:.35s;
+}
+.nav-cta:hover{
+  border-color:rgba(34,225,255,.8);
+  box-shadow:0 0 24px rgba(34,225,255,.35);
+  color:#fff;
+}
+
+/* ============ Hero ============ */
+.hero{
+  position:relative;z-index:2;
+  min-height:100vh;min-height:100svh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 20px 90px;
+  will-change:transform,opacity;
+}
+.eyebrow{
+  font-size:.68rem;letter-spacing:.5em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:26px;
+  display:flex;align-items:center;gap:14px;
+  opacity:0;animation:fadeUp 1s .15s forwards;
+}
+.eyebrow::before,.eyebrow::after{
+  content:"";width:38px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(34,225,255,.7),transparent);
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+.title{
+  font-size:clamp(3rem,15vw,12.5rem);
+  font-weight:700;
+  line-height:.86;
+  letter-spacing:-.055em;
+  background:linear-gradient(100deg,#ffffff 0%,#22e1ff 22%,#8b5cf6 46%,#ff2fb9 68%,#ffffff 100%);
+  background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 0 60px rgba(139,92,246,.4));
+  animation:shimmer 9s linear infinite, titleIn 1.3s cubic-bezier(.16,1,.3,1) forwards;
+  opacity:0;
+}
+@keyframes shimmer{0%{background-position:0% 50%}100%{background-position:220% 50%}}
+@keyframes titleIn{
+  from{opacity:0;filter:blur(26px) drop-shadow(0 0 60px rgba(139,92,246,.4));transform:translateY(28px) scale(.97)}
+  to{opacity:1;filter:blur(0) drop-shadow(0 0 60px rgba(139,92,246,.4));transform:none}
+}
+
+.subtitle{
+  margin-top:8px;
+  font-size:clamp(.8rem,2.2vw,1.05rem);
+  letter-spacing:.62em;text-indent:.62em;
+  color:var(--cyan);
+  text-shadow:0 0 26px rgba(34,225,255,.7);
+  opacity:0;animation:fadeUp 1s .55s forwards;
+}
+
+.lead{
+  max-width:560px;margin:34px auto 0;
+  color:var(--muted);font-size:clamp(.92rem,1.6vw,1.02rem);
+  line-height:1.9;
+  opacity:0;animation:fadeUp 1s .75s forwards;
+}
+.lead strong{color:var(--ink);font-weight:600}
+
+.actions{
+  display:flex;gap:16px;flex-wrap:wrap;justify-content:center;
+  margin-top:46px;
+  opacity:0;animation:fadeUp 1s .95s forwards;
+}
+
+/* ============ 按钮 ============ */
+.btn{
+  position:relative;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:16px 36px;border-radius:999px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.76rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.3), box-shadow .4s, background-position .6s, border-color .4s;
+  will-change:transform;
+}
+.btn.primary{
+  color:#04060b;
+  background:linear-gradient(100deg,var(--cyan),var(--violet) 48%,var(--pink));
+  background-size:220% 100%;
+  box-shadow:0 0 34px rgba(139,92,246,.5), inset 0 0 0 1px rgba(255,255,255,.28);
+}
+.btn.primary:hover{
+  background-position:100% 0;
+  box-shadow:0 0 60px rgba(34,225,255,.65), inset 0 0 0 1px rgba(255,255,255,.5);
+}
+.btn.ghost{
+  color:var(--ink);
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.btn.ghost:hover{border-color:rgba(139,92,246,.85);box-shadow:0 0 40px rgba(139,92,246,.4)}
+
+/* ============ 滚动提示 ============ */
+.scroll-hint{
+  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-size:.6rem;letter-spacing:.35em;color:rgba(124,134,155,.8);
+  opacity:0;animation:fadeUp 1s 1.3s forwards;
+}
+.scroll-hint i{
+  display:block;width:1px;height:52px;
+  background:linear-gradient(to bottom,rgba(34,225,255,.9),transparent);
+  animation:scrollLine 2s ease-in-out infinite;
+  transform-origin:top;
+}
+@keyframes scrollLine{0%,100%{transform:scaleY(.35);opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+/* ============ 通用区块 ============ */
+section{position:relative;z-index:2;padding:clamp(80px,12vw,150px) clamp(20px,6vw,80px)}
+.wrap{max-width:1160px;margin:0 auto}
+.sec-tag{
+  font-size:.66rem;letter-spacing:.42em;color:var(--cyan);
+  text-transform:uppercase;margin-bottom:22px;opacity:.85;
+}
+.sec-title{
+  font-size:clamp(1.9rem,5vw,3.4rem);font-weight:700;
+  letter-spacing:-.03em;line-height:1.16;max-width:760px;
+}
+.sec-title em{
+  font-style:normal;
+  background:linear-gradient(100deg,var(--cyan),var(--violet),var(--pink));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* ============ 数据 ============ */
+.stats-grid{
+  margin-top:64px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);border-radius:20px;overflow:hidden;
+}
+.stat{
+  background:rgba(8,10,17,.72);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  padding:38px 26px;
+  position:relative;overflow:hidden;
+  transition:background .4s;
+}
+.stat:hover{background:rgba(16,18,32,.9)}
+.stat::after{
+  content:"";position:absolute;left:0;bottom:0;width:100%;height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink));
+  transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .55s cubic-bezier(.2,.8,.2,1);
+}
+.stat:hover::after{transform:scaleX(1)}
+.stat-num{
+  display:block;font-size:clamp(2rem,4.4vw,2.9rem);font-weight:700;
+  letter-spacing:-.03em;line-height:1.1;
+  background:linear-gradient(180deg,#fff,#8ea2c9);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-variant-numeric:tabular-nums;
+}
+.stat-lbl{
+  display:block;margin-top:10px;
+  font-size:.72rem;letter-spacing:.2em;color:var(--muted);
+}
+
+/* ============ 宣言卡片 ============ */
+.cards{
+  margin-top:60px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;
+}
+.card{
+  position:relative;overflow:hidden;
+  padding:36px 30px 40px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  transition:transform .5s cubic-bezier(.2,.8,.2,1), border-color .5s, box-shadow .5s;
+}
+.card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(139,92,246,.22), transparent 62%);
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.card:hover{
+  transform:translateY(-8px);
+  border-color:rgba(139,92,246,.5);
+  box-shadow:0 24px 60px -20px rgba(139,92,246,.55);
+}
+.card:hover::before{opacity:1}
+.card-idx{
+  font-size:.66rem;letter-spacing:.3em;color:var(--violet);
+  display:block;margin-bottom:22px;
+}
+.card h3{
+  font-size:1.18rem;font-weight:600;letter-spacing:.01em;margin-bottom:14px;
+}
+.card p{color:var(--muted);font-size:.9rem;line-height:1.85}
+
+/* ============ 加入区 ============ */
+.join{
+  position:relative;overflow:hidden;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(139,92,246,.06),transparent 70%);
+  text-align:center;
+}
+.join .sec-title{margin:0 auto}
+.join-form{
+  margin:52px auto 0;max-width:520px;
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+}
+.join-form input{
+  flex:1 1 280px;min-width:0;
+  padding:17px 24px;border-radius:999px;
+  font-family:inherit;font-size:.88rem;color:var(--ink);
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.14);
+  outline:none;
+  transition:border-color .35s, box-shadow .35s, background .35s;
+}
+.join-form input::placeholder{color:rgba(124,134,155,.75)}
+.join-form input:focus{
+  border-color:rgba(34,225,255,.75);
+  background:rgba(255,255,255,.06);
+  box-shadow:0 0 0 4px rgba(34,225,255,.10);
+}
+.join-msg{
+  margin-top:22px;height:22px;
+  font-size:.82rem;letter-spacing:.06em;
+  color:var(--cyan);
+  opacity:0;transform:translateY(6px);
+  transition:opacity .4s, transform .4s;
+}
+.join-msg.show{opacity:1;transform:none}
+
+/* ============ 页脚 ============ */
+footer{
+  position:relative;z-index:2;
+  padding:52px clamp(20px,6vw,80px);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:22px;flex-wrap:wrap;
+  border-top:1px solid var(--line);
+  font-size:.74rem;letter-spacing:.14em;color:var(--muted);
+}
+.status{display:flex;align-items:center;gap:10px}
+.status .dot{
+  width:7px;height:7px;border-radius:50%;background:#2bffa8;
+  box-shadow:0 0 12px #2bffa8;
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.28}}
+#clock{font-variant-numeric:tabular-nums;color:var(--ink)}
+
+/* ============ 入场动画 ============ */
+[data-reveal]{
+  opacity:0;transform:translateY(34px);
+  transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+}
+[data-reveal].in{opacity:1;transform:none}
+.cards [data-reveal]:nth-child(2){transition-delay:.1s}
+.cards [data-reveal]:nth-child(3){transition-delay:.2s}
+
+/* ============ 响应式 ============ */
+@media (max-width:760px){
+  .nav-links{display:none}
+  .eyebrow{letter-spacing:.3em;font-size:.6rem}
+  .subtitle{letter-spacing:.4em;text-indent:.4em}
+  .scroll-hint{display:none}
+  .stats-grid{border-radius:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  [data-reveal]{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="vignette"></div>
+<div class="glow-cursor"></div>
+<div class="progress"></div>
+
+<!-- ============ 导航 ============ -->
+<nav class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span class="brand-mark"></span>
+    REPUBLIC<span class="dim">.US.CI</span>
+  </a>
+  <div class="nav-links">
+    <a href="#manifesto">宣言</a>
+    <a href="#stats">数据</a>
+    <a href="#join">加入</a>
+  </div>
+  <a class="nav-cta" href="#join">进入共和国</a>
+</nav>
+
+<!-- ============ Hero ============ -->
+<header class="hero" id="top">
+  <div class="eyebrow">Est. 2026 · Digital Sovereign State</div>
+  <h1 class="title">REPUBLIC</h1>
+  <div class="subtitle">us.ci</div>
+  <p class="lead">
+    这里没有疆界，只有协议。<strong>REPUBLIC</strong> 是一个由代码、共识与个体主权
+    构成的数字国度 —— 你不需要护照，只需要一次握手。
+  </p>
+  <div class="actions">
+    <a class="btn primary" href="#join">成为公民</a>
+    <a class="btn ghost" href="#manifesto">阅读宣言</a>
+  </div>
+  <div class="scroll-hint"><span>SCROLL</span><i></i></div>
+</header>
+
+<!-- ============ 宣言 ============ -->
+<section id="manifesto">
+  <div class="wrap">
+    <div class="sec-tag" data-reveal>THE MANIFESTO / 宣言</div>
+    <h2 class="sec-title" data-reveal>
+      三条不可让渡的<em>底层协议</em>
+    </h2>
+    <div class="cards">
+      <article class="card" data-reveal>
+        <span class="card-idx">PROTOCOL 01</span>
+        <h3>主权归于个体</h3>
+        <p>在 REPUBLIC，每一个地址都是一张选票。我们不登记身份，不索取护照，只承认共识。你的密钥，就是你的国籍。</p>
+      </article>
+      <article class="card" data-reveal>
+        <span class="card-idx">PROTOCOL 02</span>
+        <h3>代码即宪法</h3>
+        <p>规则公开、可审计、不可篡改。任何公民都可以分叉，但无人能够删除。透明不是承诺，而是架构本身。</p>
+      </article>
+      <article class="card" data-reveal>
+        <span class="card-idx">PROTOCOL 03</span>
+        <h3>边界只是协议</h3>
+        <p>us.ci 不是地理位置，而是一次握手。跨时区、跨语言、跨设备 —— 只要协议一致，我们就在同一片土地上。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 数据 ============ -->
+<section id="stats">
+  <div class="wrap">
+    <div class="sec-tag" data-reveal>LIVE TELEMETRY / 实时数据</div>
+    <h2 class="sec-title" data-reveal>共和国正在<em>持续运转</em></h2>
+    <div class="stats-grid">
+      <div class="stat">
+        <span class="stat-num" data-count="1284">0</span>
+        <span class="stat-lbl">公民节点</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="37">0</span>
+        <span class="stat-lbl">时区覆盖</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="12">0</span>
+        <span class="stat-lbl">核心协议</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="24">0</span>
+        <span class="stat-lbl">小时不间断</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 加入 ============ -->
+<section id="join" class="join">
+  <div class="wrap">
+    <div class="sec-tag" data-reveal>CITIZENSHIP / 公民身份</div>
+    <h2 class="sec-title" data-reveal>申请你的<em>数字国籍</em></h2>
+    <form class="join-form" id="joinForm" data-reveal>
+      <input type="text" id="identity" placeholder="输入你的节点标识 / @handle" autocomplete="off" spellcheck="false">
+      <button class="btn primary" type="submit">提交申请</button>
+    </form>
+    <div class="join-msg" id="joinMsg"></div>
+  </div>
+</section>
+
+<!-- ============ 页脚 ============ -->
+<footer>
+  <div class="status"><span class="dot"></span> NETWORK ONLINE · REPUBLIC.US.CI</div>
+  <div id="clock">--:--:-- UTC</div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ============================================================
+     1. 粒子星链背景（Canvas）
+     ============================================================ */
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+  let W = 0, H = 0, parts = [];
+  const mouse = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4 };
+
+  function initParts() {
+    const count = Math.min(110, Math.round((W * H) / 16000));
+    parts = Array.from({ length: count }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.32,
+      vy: (Math.random() - 0.5) * 0.32,
+      r: Math.random() * 1.5 + 0.7
+    }));
+  }
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    initParts();
+  }
+
+  const LINK = 132;
+  const LINK2 = LINK * LINK;
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+
+    // 鼠标缓动
+    mouse.x += (mouse.tx - mouse.x) * 0.09;
+    mouse.y += (mouse.ty - mouse.y) * 0.09;
+
+    for (let i = 0; i < parts.length; i++) {
+      const p = parts[i];
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < -30) p.x = W + 30;
+      if (p.x > W + 30) p.x = -30;
+      if (p.y < -30) p.y = H + 30;
+      if (p.y > H + 30) p.y = -30;
+
+      // 鼠标附近轻微排斥
+      const dx = p.x - mouse.x, dy = p.y - mouse.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < 17000 && d2 > 0.5) {
+        const d = Math.sqrt(d2);
+        const f = (1 - d / 130) * 0.55;
+        p.x += (dx / d) * f;
+        p.y += (dy / d) * f;
+      }
+
+      // 节点
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(34,225,255,0.55)';
+      ctx.fill();
+
+      // 连线
+      for (let j = i + 1; j < parts.length; j++) {
+        const q = parts[j];
+        const ax = p.x - q.x, ay = p.y - q.y;
+        const dist2 = ax * ax + ay * ay;
+        if (dist2 < LINK2) {
+          const a = 1 - Math.sqrt(dist2) / LINK;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = 'rgba(139,92,246,' + (a * 0.22).toFixed(3) + ')';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  if (!reduceMotion) {
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    requestAnimationFrame(frame);
+  } else {
+    resize();
+  }
+
+  /* ============================================================
+     2. 光标光晕
+     ============================================================ */
+  const glow = document.querySelector('.glow-cursor');
+  let gx = window.innerWidth / 2, gy = window.innerHeight / 2;
+  let tgx = gx, tgy = gy;
+
+  window.addEventListener('mousemove', (e) => {
+    tgx = e.clientX;
+    tgy = e.clientY;
+    mouse.tx = e.clientX;
+    mouse.ty = e.clientY;
+  }, { passive: true });
+
+  (function glowLoop() {
+    gx += (tgx - gx) * 0.12;
+    gy += (tgy - gy) * 0.12;
+    glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px) translate(-50%,-50%)';
+    requestAnimationFrame(glowLoop);
+  })();
+
+  /* ============================================================
+     3. 滚动：进度条 / 导航 / Hero 视差
+     ============================================================ */
+  const bar = document.querySelector('.progress');
+  const nav = document.getElementById('nav');
+  const hero = document.querySelector('.hero');
+  let ticking = false;
+
+  function onScroll() {
+    const y = window.scrollY;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+    nav.classList.toggle('scrolled', y > 40);
+
+    if (!reduceMotion) {
+      const p = Math.min(y / 800, 1);
+      hero.style.transform = 'translateY(' + y * 0.28 + 'px)';
+      hero.style.opacity = String(1 - p * 0.95);
+    }
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(onScroll);
+    }
+  }, { passive: true });
+  onScroll();
+
+  /* ============================================================
+     4. 入场揭示 + 数字滚动
+     ============================================================ */
+  function countUp(el) {
+    const to = parseFloat(el.dataset.count) || 0;
+    const dur = 1800;
+    const t0 = performance.now();
+    const fmt = (n) => (n >= 1000 ? n.toLocaleString('en-US') : String(n));
+
+    function step(t) {
+      const p = Math.min((t - t0) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(to * eased));
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = fmt(to);
+    }
+    requestAnimationFrame(step);
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      const el = en.target;
+
+      if (el.hasAttribute('data-reveal')) el.classList.add('in');
+      if (el.dataset.count !== undefined) countUp(el);
+
+      io.unobserve(el);
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -70px 0px' });
+
+  document.querySelectorAll('[data-reveal], [data-count]').forEach((el) => io.observe(el));
+
+  /* ============================================================
+     5. 卡片跟随光斑
+     ============================================================ */
+  document.querySelectorAll('.card').forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  /* ============================================================
+     6. 按钮磁吸
+     ============================================================ */
+  if (!reduceMotion && window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('.btn').forEach((btn) => {
+      btn.addEventListener('mousemove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const dx = e.clientX - r.left - r.width / 2;
+        const dy = e.clientY - r.top - r.height / 2;
+        btn.style.transform = 'translate(' + dx * 0.16 + 'px,' + dy * 0.26 + 'px)';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
+  }
+
+  /* ============================================================
+     7. 页脚 UTC 时钟
+     ============================================================ */
+  const clock = document.getElementById('clock');
+  function tickClock() {
+    const iso = new Date().toISOString();
+    clock.textContent = iso.slice(11, 19) + ' UTC';
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  /* ============================================================
+     8. 加入表单
+     ============================================================ */
+  const form = document.getElementById('joinForm');
+  const msg = document.getElementById('joinMsg');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = document.getElementById('identity').value.trim();
+    if (!val) {
+      msg.textContent = '⚠ 请先输入你的节点标识';
+      msg.style.color = '#ff2fb9';
+      msg.classList.add('show');
+      return;
+    }
+    msg.style.color = '';
+    msg.textContent = '✓ 申请已广播 — 节点 ' + val + ' 等待共识确认';
+    msg.classList.add('show');
+    form.reset();
+  });
+})();
+</script>
+</body>
+</html>
